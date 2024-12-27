@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Dalamud.DiscordBridge.Model;
+using Dalamud.Game;
 using Dalamud.Game.Text;
 using Dalamud.Plugin.Services;
 using Discord;
@@ -104,7 +105,7 @@ namespace Dalamud.DiscordBridge
                 MessageCacheSize = 20, // hold onto the last 20 messages per channel in cache for duplicate checks
                 GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMessages | GatewayIntents.GuildWebhooks | GatewayIntents.MessageContent,
             });
-            this.chatHandler = new ChatHandler();
+            this.chatHandler = new ChatHandler(new SigScanner());
             Logger.Debug("AFTER DiscordSocketClient");
             this.socketClient.Ready += SocketClientOnReady;
             this.socketClient.MessageReceived += SocketClientOnMessageReceived;
@@ -204,7 +205,7 @@ namespace Dalamud.DiscordBridge
 
                         // Forward to ChatHandler
                         this.chatHandler.HandleMessage(chatChannel, chatMessage);
-                        await message.Channel.SendMessageAsync($"Message forwarded to ChatHandler: {chatMessage}");
+                        await message.DeleteAsync();
                         return;
                     }
                 }
@@ -1089,7 +1090,7 @@ namespace Dalamud.DiscordBridge
 
                 if (socketChannel == null)
                 {
-                    Logger.Error("Could not find channel {0} for {1}", channelConfig.Key, chatType);
+                    Logger.Error("1Could not find channel {0} for {1}", channelConfig.Key, chatType);
                     continue;
                 }
 
@@ -1275,7 +1276,7 @@ namespace Dalamud.DiscordBridge
 
                 if (socketChannel == null)
                 {
-                    Logger.Error("Could not find channel {0} for {1}", channelConfig.Key, chatType);
+                    Logger.Error("2Could not find channel {0} for {1}", channelConfig.Key, chatType);
 
                     // try one more time just in case.
                     socketChannel = this.socketClient.GetChannel(channelConfig.Key);
@@ -1378,7 +1379,7 @@ namespace Dalamud.DiscordBridge
 
                 if (socketChannel == null)
                 {
-                    Logger.Error("Could not find channel {0} for cfc", channelConfig.Key);
+                    Logger.Error("3Could not find channel {0} for cfc", channelConfig.Key);
                     continue;
                 }
 
