@@ -191,13 +191,13 @@ namespace Dalamud.DiscordBridge
 
             try
             {
-                // If the message is in the format "<prefix> <channel> <message>", forward to ChatHandler
+                // If the message is in the format "<prefix> <channel> <message>", and channel contains '/', forward to ChatHandler
                 if (args.Length == 2)
                 {
                     var contentWithoutPrefix = message.Content.Substring(this.plugin.Config.DiscordBotPrefix.Length).TrimStart();
                     var parts = contentWithoutPrefix.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (parts.Length == 2)
+                    if (parts.Length == 2 && parts[0].Contains("/"))
                     {
                         var chatChannel = parts[0];
                         var chatMessage = parts[1];
